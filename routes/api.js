@@ -8,11 +8,24 @@
 
 'use strict';
 
-var expect = require('chai').expect;
-var MongoClient = require('mongodb');
+var assert = require('chai').assert;
+var MongoClient = require('mongodb').MongoClient;
 var ObjectId = require('mongodb').ObjectID;
+require('dotenv').config();
 
-const CONNECTION_STRING = process.env.DB; //MongoClient.connect(CONNECTION_STRING, function(err, db) {});
+const CONNECTION_STRING = process.env.DB; 
+
+var db = new Promise((resolve, reject) => {
+  try{
+    MongoClient.connect(CONNECTION_STRING, (err, db) => {
+      if(err) console.log(err);
+      console.log('connected');
+      resolve(db);
+    });
+  }catch(err){
+    reject(err);
+  }
+})
 
 module.exports = function (app) {
 

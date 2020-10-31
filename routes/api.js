@@ -20,7 +20,7 @@ mongoose.connect(CONNECTION_STRING, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 }, (err) => {
-  if (err) console.log(err);
+  if (err) return console.log(err);
   console.log('Database Connected');
 })
 
@@ -79,8 +79,14 @@ module.exports = function (app) {
         assigned_to: assignedTo,
         status_text: statusText
       }, (err, doc) => {
-        if(err) console.log(err);
-        console.log(doc._id)
+        if (err) console.log(err);
+        res.send({
+          issue_title: issueTitle,
+          issue_text: issueText,
+          created_by: createdBy,
+          assigned_to: assignedTo,
+          status_text: tatusText
+        })
       })
     })
 

@@ -8,7 +8,6 @@
 
 'use strict';
 
-var assert = require('chai').assert;
 var MongoClient = require('mongodb');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
@@ -16,13 +15,12 @@ var ObjectId = require('mongodb').ObjectID;
 require('dotenv').config();
 
 const CONNECTION_STRING = process.env.DB;
+
 mongoose.connect(CONNECTION_STRING, {
   useNewUrlParser: true,
   useUnifiedTopology: true
-}, (err) => {
-  if (err) return console.log(err);
-  console.log('Database Connected');
-})
+}).then(() => console.log('Database is connected'))
+.catch((err) => console.log(err))
 
 var issuesSchema = new Schema({
   name: {
@@ -80,12 +78,16 @@ module.exports = function (app) {
         status_text: statusText
       }, (err, doc) => {
         if (err) console.log(err);
-        res.send({
-          issue_title: issueTitle,
-          issue_text: issueText,
-          created_by: createdBy,
-          assigned_to: assignedTo,
-          status_text: tatusText
+        res.json({
+          _id: doc._id,
+          issue_title: doc.issue_title,
+          issue_text: doc.issue_text,
+          created_by: doc.created_by,
+          assigned_to: doc.assigned_to,
+          status_text: doc.status_text,
+          created_on: doc.created_on,
+          updated_on: doc.updated_on,
+          open: doc.open
         })
       })
     })

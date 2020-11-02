@@ -23,21 +23,18 @@ mongoose.connect(CONNECTION_STRING, {
 .catch((err) => console.log(err))
 
 var issuesSchema = new Schema({
-  name: {
-    type: String,
-    required: true
-  },
+  name: String,
   issue_title: {
     type: String,
-    required: true
+    required: [true, 'issue_title required']
   },
   issue_text: {
     type: String,
-    required: true
+    required: [true, 'issue_text required']
   },
   created_by: {
     type: String,
-    required: true
+    required: [true, 'created_by required']
   },
   assigned_to: String,
   status_text: String,
@@ -77,18 +74,29 @@ module.exports = function (app) {
         assigned_to: assignedTo,
         status_text: statusText
       }, (err, doc) => {
-        if (err) console.log(err);
-        res.json({
-          _id: doc._id,
-          issue_title: doc.issue_title,
-          issue_text: doc.issue_text,
-          created_by: doc.created_by,
-          assigned_to: doc.assigned_to,
-          status_text: doc.status_text,
-          created_on: doc.created_on,
-          updated_on: doc.updated_on,
-          open: doc.open
-        })
+        if (err) {
+          var e = err.errors;
+          if(e){
+            console.log({
+              issue_title: e.issue_title.message,
+              issue_text: e.issue_text.message,
+              created_by: e.created_by.message
+            });
+          }else{
+            console.log(err)
+          }
+        }
+          res.json({
+            _id: doc._id,
+            issue_title: doc.issue_title,
+            issue_text: doc.issue_text,
+            created_by: doc.created_by,
+            assigned_to: doc.assigned_to,
+            status_text: doc.status_text,
+            created_on: doc.created_on,
+            updated_on: doc.updated_on,
+            open: doc.open
+          })
       })
     })
 

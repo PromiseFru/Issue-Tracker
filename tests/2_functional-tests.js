@@ -60,7 +60,22 @@ suite('Functional Tests', function() {
       });
       
       test('Missing required fields', function(done) {
-        
+        chai.request(server)
+        .post('/api/issues/test')
+        .send({
+          issue_title: '',
+          issue_text: 'a',
+          created_by: '',
+          assigned_to: '',
+          status_text: ''
+        })
+        .end(function(err, res){
+          assert.equal(res.status, 200);
+          assert.equal(res.body.error, 'issue_title, issue_text and created_by required');
+          assert.equal(res.body.assigned_to, '');
+          assert.equal(res.body.status_text, '');          
+          done();
+        });
       });
       
     });

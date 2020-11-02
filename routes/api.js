@@ -88,7 +88,9 @@ module.exports = function (app) {
           })
         })
       } else {
-        console.log('part b');
+        res.json({
+          error: 'Fill all required fields'
+        })
       }
     })
 

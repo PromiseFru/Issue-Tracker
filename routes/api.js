@@ -17,10 +17,10 @@ require('dotenv').config();
 const CONNECTION_STRING = process.env.DB;
 
 mongoose.connect(CONNECTION_STRING, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-}).then(() => console.log('Database is connected'))
-.catch((err) => console.log(err))
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  }).then(() => console.log('Database is connected'))
+  .catch((err) => console.log(err))
 
 var issuesSchema = new Schema({
   name: String,
@@ -65,27 +65,16 @@ module.exports = function (app) {
       //var createdOn = req.body.created_on;
       //var updatedOn = req.body.updated_on;
       var open = req.body.open;
-
-      Issue.create({
-        name: project,
-        issue_title: issueTitle,
-        issue_text: issueText,
-        created_by: createdBy,
-        assigned_to: assignedTo,
-        status_text: statusText
-      }, (err, doc) => {
-        if (err) {
-          var e = err.errors;
-          if(e){
-            console.log({
-              issue_title: e.issue_title.message,
-              issue_text: e.issue_text.message,
-              created_by: e.created_by.message
-            });
-          }else{
-            console.log(err)
-          }
-        }
+      if (issueTitle && issueText && createdBy) {
+        Issue.create({
+          name: project,
+          issue_title: issueTitle,
+          issue_text: issueText,
+          created_by: createdBy,
+          assigned_to: assignedTo,
+          status_text: statusText
+        }, (err, doc) => {
+          if (err) console.log(err)
           res.json({
             _id: doc._id,
             issue_title: doc.issue_title,
@@ -97,7 +86,10 @@ module.exports = function (app) {
             updated_on: doc.updated_on,
             open: doc.open
           })
-      })
+        })
+      } else {
+        console.log('part b');
+      }
     })
 
     .get(function (req, res) {

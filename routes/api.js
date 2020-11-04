@@ -74,7 +74,7 @@ module.exports = function (app) {
           assigned_to: assignedTo,
           status_text: statusText
         }, (err, doc) => {
-          if (err) console.log(err)
+          if (err) return console.log(err)
           res.json({
             _id: doc._id,
             issue_title: doc.issue_title,
@@ -83,7 +83,6 @@ module.exports = function (app) {
             assigned_to: doc.assigned_to,
             status_text: doc.status_text,
             created_on: doc.created_on,
-            updated_on: doc.updated_on,
             open: doc.open
           })
         })
@@ -100,8 +99,47 @@ module.exports = function (app) {
     })
 
     .put(function (req, res) {
-      var project = req.params.project;
+      var project = req.params.project; 
+      var issueTitle = req.body.issue_title;
+      var issueText = req.body.issue_text;
+      var createdBy = req.body.created_by;
+      var assignedTo = req.body.assigned_to;
+      var statusText = req.body.status_text;     
+      var id = req.params.id;
 
+      var query = {}
+
+      if(issueTitle || issueText || createdBy || assignedTo || statusText){
+        if(issueTitle){
+          query.issue_title = issueTitle;
+        }
+        if(issueText){
+          query.issue_text = issueText;
+        }
+        if(createdBy){
+          query.created_by = createdBy;
+        }
+        if(assignedTo){
+          query.assigned_to = assignedTo;
+        }
+        if(statusText){
+          query.status_text = statusText;
+        }
+        console.log(query);
+
+        Issue.findOneAndUpdate({id}, {useFindAndModify: false}, query, (err, doc) => {
+          if(err) return console.log(err);
+          res.json({
+            doc
+          })
+        })
+
+      }
+      else{
+        res.json({
+          error: 'no updated field sent'
+        })
+      }
     })
 
     .delete(function (req, res) {

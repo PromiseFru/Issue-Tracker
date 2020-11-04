@@ -99,43 +99,53 @@ module.exports = function (app) {
     })
 
     .put(function (req, res) {
-      var project = req.params.project; 
+      var project = req.params.project;
       var issueTitle = req.body.issue_title;
       var issueText = req.body.issue_text;
       var createdBy = req.body.created_by;
       var assignedTo = req.body.assigned_to;
-      var statusText = req.body.status_text;     
+      var statusText = req.body.status_text;
       var id = req.params.id;
 
       var query = {}
 
-      if(issueTitle || issueText || createdBy || assignedTo || statusText){
-        if(issueTitle){
+      if (issueTitle || issueText || createdBy || assignedTo || statusText) {
+        if (issueTitle) {
           query.issue_title = issueTitle;
         }
-        if(issueText){
+        if (issueText) {
           query.issue_text = issueText;
         }
-        if(createdBy){
+        if (createdBy) {
           query.created_by = createdBy;
         }
-        if(assignedTo){
+        if (assignedTo) {
           query.assigned_to = assignedTo;
         }
-        if(statusText){
+        if (statusText) {
           query.status_text = statusText;
         }
         console.log(query);
 
-        Issue.findOneAndUpdate({id}, {useFindAndModify: false}, query, (err, doc) => {
-          if(err) return console.log(err);
-          res.json({
-            doc
-          })
+        Issue.findOneAndUpdate({
+          id
+        }, query, {
+          useFindAndModify: false,
+          returnOriginal: false
+        }, (err, doc) => {
+          if (err) {
+            console.log(err);
+            res.json({
+              error: 'could not update'
+            })
+          } else {
+            res.json({
+              success: 'successfully updated'
+            })
+          }
         })
 
-      }
-      else{
+      } else {
         res.json({
           error: 'no updated field sent'
         })

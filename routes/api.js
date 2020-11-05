@@ -107,7 +107,9 @@ module.exports = function (app) {
       var statusText = req.body.status_text;
       var id = req.body.id;
 
-      var query = {}
+      var query = {
+        updated_on: Date.now()
+      }
 
       if (issueTitle || issueText || createdBy || assignedTo || statusText) {
         if (issueTitle) {
@@ -135,10 +137,12 @@ module.exports = function (app) {
             console.log(err);
             return res.json('could not find');
           } else {
-            Issue.updateOne({_id:doc._id}, query, (err, result) => {
+            Issue.updateOne({
+              _id: doc._id
+            }, query, (err, result) => {
               if (err) {
                 return res.json('could not update');
-              }else{
+              } else {
                 return res.json('successfully updated');
               }
             })

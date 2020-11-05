@@ -138,6 +138,7 @@ module.exports = function (app) {
               _id: doc._id
             }, query, (err, result) => {
               if (err) {
+                console.log(err);
                 return res.json('could not update');
               } else {
                 return res.json('successfully updated');
@@ -152,7 +153,20 @@ module.exports = function (app) {
 
     .delete(function (req, res) {
       var project = req.params.project;
+      var id = req.body.id;
 
+      if(id){
+        Issue.deleteOne({_id: id}, (err) => {
+          if(err) {
+            console.log(err);
+            return res.json('could not delete '+id);
+          }else{
+            return res.json('deleted '+id);
+          }
+        })
+      }else{
+        res.json('id error');
+      }
     });
 
 };

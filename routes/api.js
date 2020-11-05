@@ -155,16 +155,28 @@ module.exports = function (app) {
       var project = req.params.project;
       var id = req.body.id;
 
-      if(id){
-        Issue.deleteOne({_id: id}, (err) => {
-          if(err) {
+      if (id) {
+        Issue.findOne({
+          _id: id
+        }, (err, doc) => {
+          if (!doc) return res.json('Not Found');
+          if (err) {
             console.log(err);
-            return res.json('could not delete '+id);
-          }else{
-            return res.json('deleted '+id);
+            return res.json('could not find');
+          } else {
+            Issue.deleteOne({
+              _id: doc._id
+            }, (err) => {
+              if (err) {
+                console.log(err);
+                return res.json('could not delete ' + id);
+              } else {
+                return res.json('deleted ' + id);
+              }
+            })
           }
         })
-      }else{
+      } else {
         res.json('id error');
       }
     });

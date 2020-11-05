@@ -55,8 +55,6 @@ module.exports = function (app) {
   app.route('/api/issues/:project')
 
     .post(async function (req, res) {
-      await dbConnection;
-
       var project = req.params.project;
       var issueTitle = req.body.issue_title;
       var issueText = req.body.issue_text;
@@ -97,7 +95,7 @@ module.exports = function (app) {
 
     })
 
-    .put(function (req, res) {
+    .put(async function (req, res) {
       var project = req.params.project;
       var issueTitle = req.body.issue_title;
       var issueText = req.body.issue_text;

@@ -15,11 +15,10 @@ var ObjectId = require('mongodb').ObjectID;
 require('dotenv').config();
 
 const CONNECTION_STRING = process.env.DB;
-
-mongoose.connect(CONNECTION_STRING, {
+var dbConnection = mongoose.connect(CONNECTION_STRING, {
     useNewUrlParser: true,
     useUnifiedTopology: true
-  }).then(() => console.log('Database is connected'))
+  }).then(() => console.log('Database connected'))
   .catch((err) => console.log(err))
 
 var issuesSchema = new Schema({
@@ -56,6 +55,8 @@ module.exports = function (app) {
   app.route('/api/issues/:project')
 
     .post(async function (req, res) {
+      await dbConnection;
+
       var project = req.params.project;
       var issueTitle = req.body.issue_title;
       var issueText = req.body.issue_text;
@@ -87,9 +88,7 @@ module.exports = function (app) {
           })
         })
       } else {
-        res.json({
-          error: 'Fill all required fields'
-        })
+        res.json('Fill all required fields');
       }
     })
 
@@ -148,28 +147,8 @@ module.exports = function (app) {
             })
           }
         })
-        // Issue.findOneAndUpdate({
-        //   id
-        // }, query, {
-        //   useFindAndModify: false,
-        //   returnOriginal: false
-        // }, (err, doc) => {
-        //   if (err) {
-        //     console.log(err);
-        //     res.json({
-        //       error: 'could not update'
-        //     })
-        //   } else {
-        //     res.json({
-        //       success: 'successfully updated'
-        //     })
-        //   }
-        // })
-
       } else {
-        res.json({
-          error: 'no updated field sent'
-        })
+        res.json('no updated field sent')
       }
     })
 

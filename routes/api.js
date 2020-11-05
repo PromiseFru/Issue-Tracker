@@ -130,23 +130,19 @@ module.exports = function (app) {
         Issue.findOne({
           _id: id
         }, (err, doc) => {
-          if(err) return res.json(err);
           if (!doc) return res.json('Not Found');
-          res.json(
-            doc
-          )
-          // if (err) {
-          //   console.log(err);
-          //   return res.send('could not update');
-          // } else {
-          //   Issue.updateOne(doc._id, query, (err, result) => {
-          //     if (err) {
-          //       return res.send('could not update');
-          //     }else{
-          //       return res.send('successfully updated');
-          //     }
-          //   })
-          // }
+          if (err) {
+            console.log(err);
+            return res.json('could not find');
+          } else {
+            Issue.updateOne({_id:doc._id}, query, (err, result) => {
+              if (err) {
+                return res.json('could not update');
+              }else{
+                return res.json('successfully updated');
+              }
+            })
+          }
         })
         // Issue.findOneAndUpdate({
         //   id

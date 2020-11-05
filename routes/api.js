@@ -105,7 +105,7 @@ module.exports = function (app) {
       var createdBy = req.body.created_by;
       var assignedTo = req.body.assigned_to;
       var statusText = req.body.status_text;
-      var id = req.params.id;
+      var id = req.body.id;
 
       var query = {}
 
@@ -125,25 +125,46 @@ module.exports = function (app) {
         if (statusText) {
           query.status_text = statusText;
         }
-        console.log(query);
+        // console.log(query);
 
-        Issue.findOneAndUpdate({
-          id
-        }, query, {
-          useFindAndModify: false,
-          returnOriginal: false
+        Issue.findOne({
+          _id: id
         }, (err, doc) => {
-          if (err) {
-            console.log(err);
-            res.json({
-              error: 'could not update'
-            })
-          } else {
-            res.json({
-              success: 'successfully updated'
-            })
-          }
+          if(err) return res.json(err);
+          if (!doc) return res.json('Not Found');
+          res.json(
+            doc
+          )
+          // if (err) {
+          //   console.log(err);
+          //   return res.send('could not update');
+          // } else {
+          //   Issue.updateOne(doc._id, query, (err, result) => {
+          //     if (err) {
+          //       return res.send('could not update');
+          //     }else{
+          //       return res.send('successfully updated');
+          //     }
+          //   })
+          // }
         })
+        // Issue.findOneAndUpdate({
+        //   id
+        // }, query, {
+        //   useFindAndModify: false,
+        //   returnOriginal: false
+        // }, (err, doc) => {
+        //   if (err) {
+        //     console.log(err);
+        //     res.json({
+        //       error: 'could not update'
+        //     })
+        //   } else {
+        //     res.json({
+        //       success: 'successfully updated'
+        //     })
+        //   }
+        // })
 
       } else {
         res.json({

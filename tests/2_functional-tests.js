@@ -127,7 +127,32 @@ suite('Functional Tests', function () {
     });
 
     test('Multiple fields to update', function (done) {
-
+      chai.request(server)
+      .post('/api/issues/test')
+      .send({
+        issue_title: 'Title',
+        issue_text: 'text',
+        created_by: 'Functional Test - Every field filled in',
+        assigned_to: 'Chai and Mocha',
+        status_text: 'In QA'
+      })
+      .end((err, res) => {
+        chai.request(server)
+          .put('/api/issues/test')
+          .send({
+            id: res.body._id,
+            issue_title: 'new title',
+            issue_text: 'new text',
+            created_by: 'me created this',
+            assigned_to: '',
+            status_text: 'something here'
+          })
+          .end(function (err, res) {
+            assert.equal(res.status, 200);
+            assert.equal(res.body, 'successfully updated');
+            done();
+          });
+      })
     });
 
   });

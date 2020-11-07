@@ -80,11 +80,16 @@ module.exports = function (app) {
       }
 
       if (issueTitle && issueText && createdBy) {
-        Project.findOne({name: project}, (err, doc) => {
-          if(err) return console.log(err);
-          if(!doc) {
-            Project.create({name: project, issues: newIssue}, (err, doc) => {
-              if(err) return console.log(err);
+        Project.findOne({
+          name: project
+        }, (err, doc) => {
+          if (err) return console.log(err);
+          if (!doc) {
+            Project.create({
+              name: project,
+              issues: newIssue
+            }, (err, doc) => {
+              if (err) return console.log(err);
 
               var fetchIssues = []
 
@@ -92,27 +97,36 @@ module.exports = function (app) {
                 fetchIssues.push(ele)
               })
               res.json(
-                fetchIssues[fetchIssues.length-1]
+                fetchIssues[fetchIssues.length - 1]
               )
+
+            })
+          } else {
+            Project.updateOne({
+              name: project
+            }, {
+              $push: {
+                issues: newIssue
+              }
+            }, (err, doc) => {
+              if (err) return console.log(err);
+
+              Project.findOne({
+                name: project
+              }, (err, doc) => {
+                if (err) return console.log(err);
+                var fetchIssues = []
+
+                doc.issues.forEach(ele => {
+                  fetchIssues.push(ele)
+                })
+                res.json(
+                  fetchIssues[fetchIssues.length - 1]
+                )
+              })
             })
           }
         })
-        // Issue.create({
-        //   name: project,
-
-        // }, (err, doc) => {
-        //   if (err) return console.log(err)
-        //   res.json({
-        //     _id: doc._id,
-        //     issue_title: doc.issue_title,
-        //     issue_text: doc.issue_text,
-        //     created_by: doc.created_by,
-        //     assigned_to: doc.assigned_to,
-        //     status_text: doc.status_text,
-        //     created_on: doc.created_on,
-        //     open: doc.open
-        //   })
-        // })
       } else {
         res.json('Fill all required fields');
       }

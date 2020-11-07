@@ -21,34 +21,39 @@ var dbConnection = mongoose.connect(CONNECTION_STRING, {
   }).then(() => console.log('Database connected'))
   .catch((err) => console.log(err))
 
-var issuesSchema = new Schema({
+var projectSchema = new Schema({
   name: String,
-  issue_title: {
-    type: String,
-    required: [true, 'issue_title required']
-  },
-  issue_text: {
-    type: String,
-    required: [true, 'issue_text required']
-  },
-  created_by: {
-    type: String,
-    required: [true, 'created_by required']
-  },
-  assigned_to: String,
-  status_text: String,
-  created_on: {
-    type: Date,
-    default: Date.now
-  },
-  updated_on: {
-    type: Date,
-    default: Date.now
-  },
-  open: Boolean
+  issues: [{
+    issue_title: {
+      type: String,
+      required: [true, 'issue_title required']
+    },
+    issue_text: {
+      type: String,
+      required: [true, 'issue_text required']
+    },
+    created_by: {
+      type: String,
+      required: [true, 'created_by required']
+    },
+    assigned_to: String,
+    status_text: String,
+    created_on: {
+      type: Date,
+      default: Date.now
+    },
+    updated_on: {
+      type: Date,
+      default: Date.now
+    },
+    open: {
+      type: Boolean,
+      default: true
+    }
+  }]
 })
 
-var Issue = mongoose.model('Issue', issuesSchema);
+var Project = mongoose.model('Project', projectSchema);
 
 module.exports = function (app) {
 
@@ -56,6 +61,7 @@ module.exports = function (app) {
 
     .post(async function (req, res) {
       var project = req.params.project;
+
       var issueTitle = req.body.issue_title;
       var issueText = req.body.issue_text;
       var createdBy = req.body.created_by;
@@ -64,27 +70,49 @@ module.exports = function (app) {
       //var createdOn = req.body.created_on;
       //var updatedOn = req.body.updated_on;
       var open = req.body.open;
+
+      var newIssue = {
+        issue_title: issueTitle,
+        issue_text: issueText,
+        created_by: createdBy,
+        assigned_to: assignedTo,
+        status_text: statusText
+      }
+
       if (issueTitle && issueText && createdBy) {
-        Issue.create({
-          name: project,
-          issue_title: issueTitle,
-          issue_text: issueText,
-          created_by: createdBy,
-          assigned_to: assignedTo,
-          status_text: statusText
-        }, (err, doc) => {
-          if (err) return console.log(err)
-          res.json({
-            _id: doc._id,
-            issue_title: doc.issue_title,
-            issue_text: doc.issue_text,
-            created_by: doc.created_by,
-            assigned_to: doc.assigned_to,
-            status_text: doc.status_text,
-            created_on: doc.created_on,
-            open: doc.open
-          })
+        Project.findOne({name: project}, (err, doc) => {
+          if(err) return console.log(err);
+          if(!doc) {
+            Project.create({name: project, issues: newIssue}, (err, doc) => {
+              if(err) return console.log(err);
+
+              var fetchIssues = []
+
+              doc.issues.forEach(ele => {
+                fetchIssues.push(ele)
+              })
+              res.json(
+                fetchIssues[fetchIssues.length-1]
+              )
+            })
+          }
         })
+        // Issue.create({
+        //   name: project,
+
+        // }, (err, doc) => {
+        //   if (err) return console.log(err)
+        //   res.json({
+        //     _id: doc._id,
+        //     issue_title: doc.issue_title,
+        //     issue_text: doc.issue_text,
+        //     created_by: doc.created_by,
+        //     assigned_to: doc.assigned_to,
+        //     status_text: doc.status_text,
+        //     created_on: doc.created_on,
+        //     open: doc.open
+        //   })
+        // })
       } else {
         res.json('Fill all required fields');
       }

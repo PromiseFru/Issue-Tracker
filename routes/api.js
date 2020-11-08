@@ -168,16 +168,23 @@ module.exports = function (app) {
         }
         // console.log(query);
 
-        Issue.findOne({
-          _id: id
+        Project.findOne({
+          name: project
         }, (err, doc) => {
           if (!doc) return res.json('Not Found');
           if (err) {
             console.log(err);
             return res.json('could not find');
           } else {
-            Issue.updateOne({
-              _id: doc._id
+            var fetchIssue = [];
+            doc.issues.forEach((ele) => {
+              fetchIssue.push(ele);
+            });
+
+            var filterIssue = fetchIssue.filter(item => item._id == id)
+
+            Project.updateOne({
+              "issues._id": filterIssue[filterIssue.length - 1]._id
             }, query, (err, result) => {
               if (err) {
                 console.log(err);

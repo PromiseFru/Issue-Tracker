@@ -1,4 +1,4 @@
- /*
+/*
  *
  *
  *       Complete the API routing below
@@ -178,7 +178,7 @@ module.exports = function (app) {
           } else {
             var fetchAll = doc.issues;
             var pos = fetchAll.map(item => item._id).indexOf(id)
-            var removed = fetchAll.splice(pos,1);
+            var removed = fetchAll.splice(pos, 1);
             var fetchedId = removed[0]._id;
             var fetchedCreatedOn = removed[0].created_on;
             var updated = {
@@ -186,13 +186,13 @@ module.exports = function (app) {
               created_on: fetchedCreatedOn,
               ...query
             }
-            console.log(updated)
             fetchAll.splice(pos, 0, updated);
-            console.log(fetchAll);
 
             Project.updateOne({
               name: project
-            },{issues: fetchAll}, (err, result) => {
+            }, {
+              issues: fetchAll
+            }, (err, result) => {
               if (err) {
                 console.log(err);
                 return res.json('could not update');
@@ -212,22 +212,29 @@ module.exports = function (app) {
       var id = req.body.id;
 
       if (id) {
-        Issue.findOne({
-          _id: id
+        Project.findOne({
+          name: project
         }, (err, doc) => {
           if (!doc) return res.json('Not Found');
           if (err) {
             console.log(err);
             return res.json('could not find');
           } else {
-            Issue.deleteOne({
-              _id: doc._id
-            }, (err) => {
+            var fetchAll = doc.issues;
+            var pos = fetchAll.map(item => item._id).indexOf(id)
+            var removed = fetchAll.splice(pos, 1);
+            var fetchedId = removed[0]._id;
+
+            Project.updateOne({
+              name: project
+            }, {
+              issues: fetchAll
+            }, (err, result) => {
               if (err) {
                 console.log(err);
-                return res.json('could not delete ' + id);
+                return res.json('could not delete ' + fetchedId);
               } else {
-                return res.json('deleted ' + id);
+                return res.json('deleted ' + fetchedId);
               }
             })
           }

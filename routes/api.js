@@ -135,6 +135,16 @@ module.exports = function (app) {
     .get(function (req, res) {
       var project = req.params.project;
 
+      Project.findOne({
+        name: project
+      }, (err, doc) => {
+        if(err) {
+          console.log(err);
+          return res.json('Not found');
+        }else {
+          res.json(doc.issues);
+        }
+      })
     })
 
     .put(async function (req, res) {

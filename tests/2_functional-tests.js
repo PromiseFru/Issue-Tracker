@@ -112,11 +112,7 @@ suite('Functional Tests', function () {
             .put('/api/issues/test')
             .send({
               id: res.body._id,
-              issue_title: 'new title',
-              issue_text: '',
-              created_by: '',
-              assigned_to: '',
-              status_text: ''
+              issue_title: 'new title'
             })
             .end(function (err, res) {
               assert.equal(res.status, 200);
@@ -144,7 +140,6 @@ suite('Functional Tests', function () {
               issue_title: 'new title',
               issue_text: 'new text',
               created_by: 'me created this',
-              assigned_to: '',
               status_text: 'something here'
             })
             .end(function (err, res) {

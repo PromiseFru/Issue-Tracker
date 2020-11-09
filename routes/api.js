@@ -180,11 +180,15 @@ module.exports = function (app) {
             var pos = fetchAll.map(item => item._id).indexOf(id)
             var removed = fetchAll.splice(pos,1);
             var fetchedId = removed[0]._id;
+            var fetchedCreatedOn = removed[0].created_on;
             var updated = {
               _id: fetchedId,
+              created_on: fetchedCreatedOn,
               ...query
             }
-            fetchAll.splice(pos, 1, updated);
+            console.log(updated)
+            fetchAll.splice(pos, 0, updated);
+            console.log(fetchAll);
 
             Project.updateOne({
               name: project

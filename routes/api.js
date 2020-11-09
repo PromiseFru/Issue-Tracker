@@ -1,4 +1,4 @@
-/*
+ /*
  *
  *
  *       Complete the API routing below
@@ -15,7 +15,7 @@ var ObjectId = require('mongodb').ObjectID;
 require('dotenv').config();
 
 const CONNECTION_STRING = process.env.DB;
-var dbConnection = mongoose.connect(CONNECTION_STRING, {
+mongoose.connect(CONNECTION_STRING, {
     useNewUrlParser: true,
     useUnifiedTopology: true
   }).then(() => console.log('Database connected'))
@@ -176,16 +176,19 @@ module.exports = function (app) {
             console.log(err);
             return res.json('could not find');
           } else {
-            var fetchIssue = [];
-            doc.issues.forEach((ele) => {
-              fetchIssue.push(ele);
-            });
-
-            var filterIssue = fetchIssue.filter(item => item._id == id)
+            var fetchAll = doc.issues;
+            var pos = fetchAll.map(item => item._id).indexOf(id)
+            var removed = fetchAll.splice(pos,1);
+            var fetchedId = removed[0]._id;
+            var updated = {
+              _id: fetchedId,
+              ...query
+            }
+            fetchAll.splice(pos, 1, updated);
 
             Project.updateOne({
-              "issues._id": filterIssue[filterIssue.length - 1]._id
-            }, query, (err, result) => {
+              name: project
+            },{issues: fetchAll}, (err, result) => {
               if (err) {
                 console.log(err);
                 return res.json('could not update');

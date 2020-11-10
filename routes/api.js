@@ -141,21 +141,29 @@ module.exports = function (app) {
       Project.findOne({
         name: project
       }, (err, doc) => {
-        if(err) {
+        if (err) {
           console.log(err);
           return res.json('Not found');
-        }else {
-          if(query){
+        } else {
+          if (query) {
             var fetchAll = doc.issues;
             // var fields = ['issue_title', 'issue_text', 'created_on', 'updated_on', 'created_by', 'assigned_to', 'open', 'status_text', '_id'];
-            var filterIssues = fetchAll.filter((obj) => {
-              if(obj['open'] == query['open']){
-                return true;
-              }
-            });
+            var nestedFilter = (targetArray, filters) => {
+              var filterKeys = Object.keys(filters);
+              return targetArray.filter(function (eachObj) {
+                return filterKeys.every(function (eachKey) {
+                  if (!filters[eachKey].length) {
+                    return true;
+                  }
+                  return filters[eachKey].includes(eachObj[eachKey]);
+                });
+              });
+            };
+
+            var filterIssues =  nestedFilter(fetchAll, query);
 
             res.json(filterIssues);
-          }else{
+          } else {
             res.json(doc.issues);
           }
         }

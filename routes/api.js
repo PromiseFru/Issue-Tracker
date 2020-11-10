@@ -134,6 +134,9 @@ module.exports = function (app) {
 
     .get(function (req, res) {
       var project = req.params.project;
+      var query = req.query;
+
+      console.log(query);
 
       Project.findOne({
         name: project
@@ -142,7 +145,19 @@ module.exports = function (app) {
           console.log(err);
           return res.json('Not found');
         }else {
-          res.json(doc.issues);
+          if(query){
+            var fetchAll = doc.issues;
+            // var fields = ['issue_title', 'issue_text', 'created_on', 'updated_on', 'created_by', 'assigned_to', 'open', 'status_text', '_id'];
+            var filterIssues = fetchAll.filter((obj) => {
+              if(obj['open'] == query['open']){
+                return true;
+              }
+            });
+
+            res.json(filterIssues);
+          }else{
+            res.json(doc.issues);
+          }
         }
       })
     })

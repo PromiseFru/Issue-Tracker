@@ -60,10 +60,10 @@ module.exports = function (app) {
   app.route('/api/issues/:project')
 
     .post(async function (req, res) {
-      var project = req.params.project;
-      var body = req.body;
-
       try {
+        var project = req.params.project;
+        var body = req.body;
+
         await mongoose.connect(CONNECTION_STRING, {
           useNewUrlParser: true,
           useUnifiedTopology: true
@@ -134,72 +134,70 @@ module.exports = function (app) {
     })
 
     .put(async function (req, res) {
-      var project = req.params.project;
-      var issueTitle = req.body.issue_title;
-      var issueText = req.body.issue_text;
-      var createdBy = req.body.created_by;
-      var assignedTo = req.body.assigned_to;
-      var statusText = req.body.status_text;
-      var id = req.body.id;
+      try {
+        var project = req.params.project;
+        var body = req.body
 
-      var query = {
-        updated_on: Date.now()
-      }
+        var query = {
+          updated_on: Date.now()
+        }
 
-      if (issueTitle || issueText || createdBy || assignedTo || statusText) {
-        if (issueTitle) {
-          query.issue_title = issueTitle;
-        }
-        if (issueText) {
-          query.issue_text = issueText;
-        }
-        if (createdBy) {
-          query.created_by = createdBy;
-        }
-        if (assignedTo) {
-          query.assigned_to = assignedTo;
-        }
-        if (statusText) {
-          query.status_text = statusText;
-        }
-        // console.log(query);
+        if (body.issue_title || body.issue_text || body.created_by || body.assigned_to || body.status_text) {
+          if (body.issue_title) {
+            query.issue_title = body.issue_title;
+          }
+          if (body.issue_text) {
+            query.issue_text = body.issue_text;
+          }
+          if (body.created_by) {
+            query.created_by = body.created_by;
+          }
+          if (body.assigned_to) {
+            query.assigned_to = body.assigned_to;
+          }
+          if (body.status_text) {
+            query.status_text = body.status_text;
+          }
+          if (!body.id) {
+            return res.json('id error');
+          }
 
-        Project.findOne({
-          name: project
-        }, (err, doc) => {
-          if (!doc) return res.json('Not Found');
-          if (err) {
-            console.log(err);
-            return res.json('could not find');
-          } else {
-            var fetchAll = doc.issues;
-            var pos = fetchAll.map(item => item._id).indexOf(id)
-            var removed = fetchAll.splice(pos, 1);
-            var fetchedId = removed[0]._id;
-            var fetchedCreatedOn = removed[0].created_on;
-            var updated = {
-              _id: fetchedId,
-              created_on: fetchedCreatedOn,
-              ...query
-            }
-            fetchAll.splice(pos, 0, updated);
-
-            Project.updateOne({
-              name: project
-            }, {
-              issues: fetchAll
-            }, (err, result) => {
+          await mongoose.connect(CONNECTION_STRING, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true
+          }).then(() => {
+            Project.findOne({
+              _id: body.id
+            }, (err, doc) => {
+              if (!doc) return res.json('Not Found');
               if (err) {
                 console.log(err);
-                return res.json('could not update');
+                return res.json('could not find');
               } else {
-                return res.json('successfully updated');
+                if (doc.name != project) return res.json('Not Found');
+                Project.updateOne({
+                  _id: doc._id
+                }, query, (err, result) => {
+                  if (err) {
+                    console.log(err);
+                    return res.json('could not update');
+                  } else {
+                    return res.json('successfully updated');
+                  }
+                })
               }
             })
-          }
-        })
-      } else {
-        res.json('no updated field sent')
+          }).catch(err => {
+            console.log(err);
+            res.json('could not update');
+          })
+        } else {
+          res.json('no updated field sent')
+        }
+      } catch {
+        (err) => {
+          console.log(err);
+        }
       }
     })
 

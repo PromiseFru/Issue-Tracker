@@ -15,11 +15,6 @@ var ObjectId = require('mongodb').ObjectID;
 require('dotenv').config();
 
 const CONNECTION_STRING = process.env.DB;
-mongoose.connect(CONNECTION_STRING, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-  }).then(() => console.log('Database connected'))
-  .catch((err) => console.log(err))
 
 var projectSchema = new Schema({
   name: String,
@@ -59,75 +54,93 @@ module.exports = function (app) {
 
     .post(async function (req, res) {
       var project = req.params.project;
+      var body = req.body;
 
-      var issueTitle = req.body.issue_title;
-      var issueText = req.body.issue_text;
-      var createdBy = req.body.created_by;
-      var assignedTo = req.body.assigned_to;
-      var statusText = req.body.status_text;
-      //var createdOn = req.body.created_on;
-      //var updatedOn = req.body.updated_on;
-      var open = req.body.open;
+      console.log(body);
 
-      var newIssue = {
-        issue_title: issueTitle,
-        issue_text: issueText,
-        created_by: createdBy,
-        assigned_to: assignedTo,
-        status_text: statusText
-      }
-
-      if (issueTitle && issueText && createdBy) {
-        Project.findOne({
-          name: project
-        }, (err, doc) => {
-          if (err) return console.log(err);
-          if (!doc) {
+      try {
+        await mongoose.connect(CONNECTION_STRING, {
+          useNewUrlParser: true,
+          useUnifiedTopology: true
+        }).then(() => {
+          if (body.issue_title && body.issue_text && body.created_by) {
             Project.create({
               name: project,
-              issues: newIssue
+              issue_title: body.issue_title,
+              issue_text: body.issue_text,
+              created_by: body.created_by,
+              assigned_to: body.assigned_to,
+              status_text: bosy.status_text
             }, (err, doc) => {
-              if (err) return console.log(err);
-
-              var fetchIssues = []
-
-              doc.issues.forEach(ele => {
-                fetchIssues.push(ele)
-              })
-              res.json(
-                fetchIssues[fetchIssues.length - 1]
-              )
-
+              if (err) {
+                console.log(err);
+                res.json('could not create');
+              }
+              console.log('successfully created');
+              res.json(doc);
             })
           } else {
-            Project.updateOne({
-              name: project
-            }, {
-              $push: {
-                issues: newIssue
-              }
-            }, (err, doc) => {
-              if (err) return console.log(err);
-
-              Project.findOne({
-                name: project
-              }, (err, doc) => {
-                if (err) return console.log(err);
-                var fetchIssues = []
-
-                doc.issues.forEach(ele => {
-                  fetchIssues.push(ele)
-                })
-                res.json(
-                  fetchIssues[fetchIssues.length - 1]
-                )
-              })
-            })
+            res.json('Fill all required fields');
           }
+        }).catch(err => {
+          console.log(err);
+          res.json('could not create');
         })
-      } else {
-        res.json('Fill all required fields');
-      }
+      } catch {
+        (err) => console.log(err)
+      };
+
+      // if (issueTitle && issueText && createdBy) {
+      //   Project.findOne({
+      //     name: project
+      //   }, (err, doc) => {
+      //     if (err) return console.log(err);
+      //     if (!doc) {
+      //       Project.create({
+      //         name: project,
+      //         issues: newIssue
+      //       }, (err, doc) => {
+      //         if (err) return console.log(err);
+
+      //         var fetchIssues = []
+
+      //         doc.issues.forEach(ele => {
+      //           fetchIssues.push(ele)
+      //         })
+      //         res.json(
+      //           fetchIssues[fetchIssues.length - 1]
+      //         )
+
+      //       })
+      //     } else {
+      //       Project.updateOne({
+      //         name: project
+      //       }, {
+      //         $push: {
+      //           issues: newIssue
+      //         }
+      //       }, (err, doc) => {
+      //         if (err) return console.log(err);
+
+      //         Project.findOne({
+      //           name: project
+      //         }, (err, doc) => {
+      //           if (err) return console.log(err);
+      //           var fetchIssues = []
+
+      //           doc.issues.forEach(ele => {
+      //             fetchIssues.push(ele)
+      //           })
+      //           res.json(
+      //             fetchIssues[fetchIssues.length - 1]
+      //           )
+      //         })
+      //       })
+      //     }
+      //   })
+      // } else {
+      //   res.json('Fill all required fields');
+      // }
     })
 
     .get(function (req, res) {

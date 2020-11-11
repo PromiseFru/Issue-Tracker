@@ -167,7 +167,7 @@ module.exports = function (app) {
           if (body.status_text) {
             query.status_text = body.status_text;
           }
-          if (!body.id) {
+          if (!body._id) {
             return res.json('id error');
           }
 
@@ -176,7 +176,7 @@ module.exports = function (app) {
             useUnifiedTopology: true
           }).then(() => {
             Project.findOne({
-              _id: body.id
+              _id: body._id
             }, (err, doc) => {
               if (!doc) return res.json('Not Found');
               if (err) {
@@ -212,7 +212,7 @@ module.exports = function (app) {
 
     .delete(async function (req, res) {
       var project = req.params.project;
-      var id = req.body.id;
+      var id = req.body._id;
 
       try {
         await mongoose.connect(CONNECTION_STRING, {

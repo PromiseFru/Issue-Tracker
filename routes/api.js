@@ -81,7 +81,6 @@ module.exports = function (app) {
                 console.log(err);
                 res.json('could not create');
               }
-              console.log('successfully created');
               res.json(doc);
             })
           } else {

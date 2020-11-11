@@ -72,79 +72,73 @@ suite('Functional Tests', function () {
 
   });
 
-  // suite('PUT /api/issues/{project} => text', function () {
+  suite('PUT /api/issues/{project} => text', function () {
 
-  //   test('No body', function (done) {
-  //     chai.request(server)
-  //       .put('/api/issues/test')
-  //       .send({
-  //         issue_title: '',
-  //         issue_text: '',
-  //         created_by: '',
-  //         assigned_to: '',
-  //         status_text: ''
-  //       })
-  //       .end(function (err, res) {
-  //         assert.equal(res.status, 200);
-  //         assert.equal(res.body, 'no updated field sent');
-  //         done();
-  //       });
-  //   });
+    test('No body', function (done) {
+      chai.request(server)
+        .put('/api/issues/test')
+        .send({})
+        .end(function (err, res) {
+          assert.equal(res.status, 200);
+          assert.equal(res.body, 'no updated field sent');
+          done();
+        });
+    });
 
-  //   test('One field to update', function (done) {
-  //     chai.request(server)
-  //       .post('/api/issues/test')
-  //       .send({
-  //         issue_title: 'Title',
-  //         issue_text: 'text',
-  //         created_by: 'Functional Test - Every field filled in',
-  //         assigned_to: 'Chai and Mocha',
-  //         status_text: 'In QA'
-  //       })
-  //       .end((err, res) => {
-  //         chai.request(server)
-  //           .put('/api/issues/test')
-  //           .send({
-  //             id: res.body._id,
-  //             issue_title: 'new title'
-  //           })
-  //           .end(function (err, res) {
-  //             assert.equal(res.status, 200);
-  //             assert.equal(res.body, 'successfully updated');
-  //             done();
-  //           });
-  //       })
-  //   });
+    test('One field to update', function (done) {
+      chai.request(server)
+        .post('/api/issues/test')
+        .send({
+          issue_title: 'Title',
+          issue_text: 'text',
+          created_by: 'Functional Test - Every field filled in',
+          assigned_to: 'Chai and Mocha',
+          status_text: 'In QA'
+        })
+        .end((err, res) => {
+          chai.request(server)
+            .put('/api/issues/test')
+            .send({
+              id: res.body._id,
+              issue_title: 'new title'
+            })
+            .end(function (err, res) {
+              assert.equal(res.status, 200);
+              assert.equal(res.body, 'successfully updated');
+              done();
+            });
+        })
+    });
 
-  //   test('Multiple fields to update', function (done) {
-  //     chai.request(server)
-  //       .post('/api/issues/test')
-  //       .send({
-  //         issue_title: 'Title',
-  //         issue_text: 'text',
-  //         created_by: 'Functional Test - Every field filled in',
-  //         assigned_to: 'Chai and Mocha',
-  //         status_text: 'In QA'
-  //       })
-  //       .end((err, res) => {
-  //         chai.request(server)
-  //           .put('/api/issues/test')
-  //           .send({
-  //             id: res.body._id,
-  //             issue_title: 'new title',
-  //             issue_text: 'new text',
-  //             created_by: 'me created this',
-  //             status_text: 'something here'
-  //           })
-  //           .end(function (err, res) {
-  //             assert.equal(res.status, 200);
-  //             assert.equal(res.body, 'successfully updated');
-  //             done();
-  //           });
-  //       })
-  //   });
+    test('Multiple fields to update', function (done) {
+      chai.request(server)
+        .post('/api/issues/test')
+        .send({
+          issue_title: 'Title',
+          issue_text: 'text',
+          created_by: 'Functional Test - Every field filled in',
+          assigned_to: 'Chai and Mocha',
+          status_text: 'In QA'
+        })
+        .end((err, res) => {
+          chai.request(server)
+            .put('/api/issues/test')
+            .send({
+              id: res.body._id,
+              issue_title: 'new title',
+              issue_text: 'new text',
+              created_by: 'me created this',
+              status_text: 'something here'
+            })
+            .end(function (err, res) {
+              assert.equal(res.status, 200);
+              assert.equal(res.body, 'successfully updated');
+              done();
+            });
+        })
+    });
 
-  // });
+  });
 
   // suite('GET /api/issues/{project} => Array of objects with issue data', function () {
 

@@ -95,41 +95,51 @@ module.exports = function (app) {
       };
     })
 
-    .get(function (req, res) {
-      var project = req.params.project;
-      var query = req.query;
+    .get(async function (req, res) {
+      try {
+        var project = req.params.project;
+        var query = req.query;
 
-      console.log(query);
+        await mongoose.connect(CONNECTION_STRING, {
+          useNewUrlParser: true,
+          useUnifiedTopology: true
+        }).then(() => {
+          Project.find({}, (err, doc) => {
+            if (err) {
+              console.log(err);
+            } else {
+              var result = doc.filter(item => item.name == project);
+              if (result.length == 0) return res.json('Project Not Found')
 
-      Project.findOne({
-        name: project
-      }, (err, doc) => {
-        if (err) {
+              if (query) {
+                var nestedFilter = (targetArray, filters) => {
+                  var filterKeys = Object.keys(filters);
+                  return targetArray.filter(function (eachObj) {
+                    return filterKeys.every(function (eachKey) {
+                      if (!filters[eachKey].length) {
+                        return true;
+                      }
+                      return filters[eachKey].includes(eachObj[eachKey]);
+                    });
+                  });
+                };
+
+                var filterIssues = nestedFilter(result, query);
+                if(filterIssues.length == 0) return res.json('Not found');
+
+                res.json(filterIssues);
+              } else {
+                res.json(result);
+              }
+            }
+          })
+        }).catch(err => {
           console.log(err);
-          return res.json('Not found');
-        } else {
-          if (query) {
-            var fetchAll = doc.issues;
-            var nestedFilter = (targetArray, filters) => {
-              var filterKeys = Object.keys(filters);
-              return targetArray.filter(function (eachObj) {
-                return filterKeys.every(function (eachKey) {
-                  if (!filters[eachKey].length) {
-                    return true;
-                  }
-                  return filters[eachKey].includes(eachObj[eachKey]);
-                });
-              });
-            };
-
-            var filterIssues = nestedFilter(fetchAll, query);
-
-            res.json(filterIssues);
-          } else {
-            res.json(doc.issues);
-          }
-        }
-      })
+          res.json('could not fetch');
+        })
+      } catch {
+        err => console.log(err)
+      }
     })
 
     .put(async function (req, res) {

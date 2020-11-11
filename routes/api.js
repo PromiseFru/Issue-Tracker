@@ -70,7 +70,7 @@ module.exports = function (app) {
               issue_text: body.issue_text,
               created_by: body.created_by,
               assigned_to: body.assigned_to,
-              status_text: bosy.status_text
+              status_text: body.status_text
             }, (err, doc) => {
               if (err) {
                 console.log(err);
@@ -89,58 +89,6 @@ module.exports = function (app) {
       } catch {
         (err) => console.log(err)
       };
-
-      // if (issueTitle && issueText && createdBy) {
-      //   Project.findOne({
-      //     name: project
-      //   }, (err, doc) => {
-      //     if (err) return console.log(err);
-      //     if (!doc) {
-      //       Project.create({
-      //         name: project,
-      //         issues: newIssue
-      //       }, (err, doc) => {
-      //         if (err) return console.log(err);
-
-      //         var fetchIssues = []
-
-      //         doc.issues.forEach(ele => {
-      //           fetchIssues.push(ele)
-      //         })
-      //         res.json(
-      //           fetchIssues[fetchIssues.length - 1]
-      //         )
-
-      //       })
-      //     } else {
-      //       Project.updateOne({
-      //         name: project
-      //       }, {
-      //         $push: {
-      //           issues: newIssue
-      //         }
-      //       }, (err, doc) => {
-      //         if (err) return console.log(err);
-
-      //         Project.findOne({
-      //           name: project
-      //         }, (err, doc) => {
-      //           if (err) return console.log(err);
-      //           var fetchIssues = []
-
-      //           doc.issues.forEach(ele => {
-      //             fetchIssues.push(ele)
-      //           })
-      //           res.json(
-      //             fetchIssues[fetchIssues.length - 1]
-      //           )
-      //         })
-      //       })
-      //     }
-      //   })
-      // } else {
-      //   res.json('Fill all required fields');
-      // }
     })
 
     .get(function (req, res) {

@@ -23,34 +23,32 @@ mongoose.connect(CONNECTION_STRING, {
 
 var projectSchema = new Schema({
   name: String,
-  issues: [{
-    issue_title: {
-      type: String,
-      required: [true, 'issue_title required']
-    },
-    issue_text: {
-      type: String,
-      required: [true, 'issue_text required']
-    },
-    created_by: {
-      type: String,
-      required: [true, 'created_by required']
-    },
-    assigned_to: String,
-    status_text: String,
-    created_on: {
-      type: Date,
-      default: Date.now
-    },
-    updated_on: {
-      type: Date,
-      default: Date.now
-    },
-    open: {
-      type: Boolean,
-      default: true
-    }
-  }]
+  issue_title: {
+    type: String,
+    required: [true, 'issue_title required']
+  },
+  issue_text: {
+    type: String,
+    required: [true, 'issue_text required']
+  },
+  created_by: {
+    type: String,
+    required: [true, 'created_by required']
+  },
+  assigned_to: String,
+  status_text: String,
+  created_on: {
+    type: Date,
+    default: Date.now
+  },
+  updated_on: {
+    type: Date,
+    default: Date.now
+  },
+  open: {
+    type: Boolean,
+    default: true
+  }
 })
 
 var Project = mongoose.model('Project', projectSchema);
@@ -147,7 +145,6 @@ module.exports = function (app) {
         } else {
           if (query) {
             var fetchAll = doc.issues;
-            // var fields = ['issue_title', 'issue_text', 'created_on', 'updated_on', 'created_by', 'assigned_to', 'open', 'status_text', '_id'];
             var nestedFilter = (targetArray, filters) => {
               var filterKeys = Object.keys(filters);
               return targetArray.filter(function (eachObj) {
@@ -160,7 +157,7 @@ module.exports = function (app) {
               });
             };
 
-            var filterIssues =  nestedFilter(fetchAll, query);
+            var filterIssues = nestedFilter(fetchAll, query);
 
             res.json(filterIssues);
           } else {

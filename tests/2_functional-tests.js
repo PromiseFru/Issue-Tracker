@@ -209,46 +209,44 @@ suite('Functional Tests', function () {
 
   });
 
-  // suite('DELETE /api/issues/{project} => text', function () {
+  suite('DELETE /api/issues/{project} => text', function () {
 
-  //   test('No _id', function (done) {
-  //     chai.request(server)
-  //       .delete('/api/issues/test')
-  //       .send({
-  //         id: ''
-  //       })
-  //       .end(function (err, res) {
-  //         assert.equal(res.status, 200);
-  //         assert.equal(res.body, 'id error');
-  //         done();
-  //       });
-  //   });
+    test('No _id', function (done) {
+      chai.request(server)
+        .delete('/api/issues/test')
+        .send({})
+        .end(function (err, res) {
+          assert.equal(res.status, 200);
+          assert.equal(res.body, 'id error');
+          done();
+        });
+    });
 
-  //   test('Valid _id', function (done) {
-  //     chai.request(server)
-  //       .post('/api/issues/test')
-  //       .send({
-  //         issue_title: 'Title',
-  //         issue_text: 'text',
-  //         created_by: 'Functional Test - Every field filled in',
-  //         assigned_to: 'Chai and Mocha',
-  //         status_text: 'In QA'
-  //       })
-  //       .end((err, res) => {
-  //         var cid = res.body._id;
-  //         chai.request(server)
-  //           .delete('/api/issues/test')
-  //           .send({
-  //             id: cid
-  //           })
-  //           .end(function (err, res) {
-  //             assert.equal(res.status, 200);
-  //             assert.equal(res.body, 'deleted ' + cid);
-  //             done();
-  //           });
-  //       })
-  //   });
+    test('Valid _id', function (done) {
+      chai.request(server)
+        .post('/api/issues/test')
+        .send({
+          issue_title: 'Title',
+          issue_text: 'text',
+          created_by: 'Functional Test - Every field filled in',
+          assigned_to: 'Chai and Mocha',
+          status_text: 'In QA'
+        })
+        .end((err, res) => {
+          var cid = res.body._id;
+          chai.request(server)
+            .delete('/api/issues/test')
+            .send({
+              id: cid
+            })
+            .end(function (err, res) {
+              assert.equal(res.status, 200);
+              assert.equal(res.body, 'deleted ' + cid);
+              done();
+            });
+        })
+    });
 
-  // });
+  });
 
 });

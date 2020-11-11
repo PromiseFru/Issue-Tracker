@@ -125,7 +125,7 @@ module.exports = function (app) {
                 };
 
                 var filterIssues = nestedFilter(result, query);
-                if(filterIssues.length == 0) return res.json('Not found');
+                if (filterIssues.length == 0) return res.json('Not found');
 
                 res.json(filterIssues);
               } else {
@@ -210,41 +210,46 @@ module.exports = function (app) {
       }
     })
 
-    .delete(function (req, res) {
+    .delete(async function (req, res) {
       var project = req.params.project;
       var id = req.body.id;
 
-      if (id) {
-        Project.findOne({
-          name: project
-        }, (err, doc) => {
-          if (!doc) return res.json('Not Found');
-          if (err) {
-            console.log(err);
-            return res.json('could not find');
-          } else {
-            var fetchAll = doc.issues;
-            var pos = fetchAll.map(item => item._id).indexOf(id)
-            var removed = fetchAll.splice(pos, 1);
-            var fetchedId = removed[0]._id;
-
-            Project.updateOne({
-              name: project
-            }, {
-              issues: fetchAll
-            }, (err, result) => {
+      try {
+        await mongoose.connect(CONNECTION_STRING, {
+          useNewUrlParser: true,
+          useUnifiedTopology: true
+        }).then(() => {
+          if (id) {
+            Project.findOne({
+              _id: id
+            }, (err, doc) => {
+              if (!doc) return res.json('Not Found');
               if (err) {
                 console.log(err);
-                return res.json('could not delete ' + fetchedId);
+                return res.json('could not find');
               } else {
-                return res.json('deleted ' + fetchedId);
+                Project.deleteOne({
+                  _id: doc._id
+                }, (err, result) => {
+                  if (err) {
+                    console.log(err);
+                    return res.json('could not delete ' + id);
+                  } else {
+                    return res.json('deleted ' + id);
+                  }
+                })
               }
             })
+          } else {
+            res.json('id error');
           }
+        }).catch(err => {
+          console.log(err);
+          res.json('could not delete');
         })
-      } else {
-        res.json('id error');
-      }
+      } catch {
+        err => console.log(err)
+      };
     });
 
 };

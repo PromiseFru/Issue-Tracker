@@ -16,6 +16,13 @@ require('dotenv').config();
 
 const CONNECTION_STRING = process.env.DB;
 
+mongoose.connect(CONNECTION_STRING, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+}).then(() => {
+  console.log('Database connected')
+}).catch((err) => console.log(err));
+
 var projectSchema = new Schema({
   name: String,
   issue_title: {
@@ -55,8 +62,6 @@ module.exports = function (app) {
     .post(async function (req, res) {
       var project = req.params.project;
       var body = req.body;
-
-      console.log(body);
 
       try {
         await mongoose.connect(CONNECTION_STRING, {
